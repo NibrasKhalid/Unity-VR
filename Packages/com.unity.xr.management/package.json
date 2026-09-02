@@ -1,0 +1,42 @@
+{
+  "name": "com.unity.xr.management",
+  "displayName": "XR Plugin Management",
+  "version": "4.6.0",
+  "unity": "2022.3",
+  "description": "Package that provides simple management of XR plug-ins. Manages and offers help with loading, initialization, settings, and build support for XR plug-ins.",
+  "keywords": [
+    "xr",
+    "sdk",
+    "ar",
+    "vr",
+    "management",
+    "build",
+    "plugin"
+  ],
+  "dependencies": {
+    "com.unity.modules.subsystems": "1.0.0",
+    "com.unity.modules.xr": "1.0.0",
+    "com.unity.xr.core-utils": "2.2.1",
+    "com.unity.xr.legacyinputhelpers": "2.1.11"
+  },
+  "repository": {
+    "url": "https://github.cds.internal.unity3d.com/unity/xr.sdk.management.git",
+    "type": "git",
+    "revision": "7e09bb3111da77539cdd80eca684c3abdb059158"
+  },
+  "_upm": {
+    "changelog": "### Changed\n\n- Changed help box stlye for the XR Plug-in Management view for improved readability.\n- The following methods of `XRLoaderHelper` have been changed from `protected` to `public`:\n  - `StartSubsystem<T>`\n  - `StopSubsystem<T>`\n  - `DestroySubsystem<T>`\n  - `CreateSubsystem<T>`\n\n### Fixed\n\n- Fixed an issue where we now use a manual for loop instead of a foreach loop to avoid exceptions if the list of loaders is modified.\n- Fixed an issue to show the correct name for Mock HMD loader when the package is not installed. ([XRMB-152](https://issuetracker.unity3d.com/product/unity/issues/guid/XRMB-152))\n- Fixed an issue to show the correct name for OpenXR loader when the package is not installed. ([UUM-137703](https://issuetracker.unity3d.com/issues/xr-plug-in-management-inconsistant-openxr-wording))\n\n\n### Removed\n\n- Removed Oculus XR plugin from known packages due to Oculus XR plugin deprecation."
+  },
+  "upmCi": {
+    "footprint": "9d2b1e59dee03e6e7304523bfe3dcb416885b3f9"
+  },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.management@4.6/manual/index.html",
+  "samples": [
+    {
+      "displayName": "Example XR Management implementation",
+      "description": "Example code showing how to implement various portions of the XR Management API.",
+      "path": "Samples~"
+    }
+  ],
+  "_fingerprint": "ca5b202bb58375be64a47832592e75b0d413dfb1"
+}
