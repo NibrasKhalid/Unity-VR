@@ -56,7 +56,7 @@ public class OxygenParticleMotion : MonoBehaviour
     public float particleScale = 75f;
     public Color particleColor = Color.blue;
     public float trailTime = 0.6f;
-    public float trailStartWidth = 12f;
+    public float trailStartWidth = 75f;
     public float trailEndWidth = 0.0f;
 
     [Tooltip("Safety cap - particle is destroyed after this many seconds even if it hasn't reached the exit yet.")]
@@ -67,7 +67,8 @@ public class OxygenParticleMotion : MonoBehaviour
     private TrailRenderer _trail;
     private Renderer _renderer;
 
-    private static Material _sharedMaterial;
+    private static Material _sharedTrailMaterial;
+    private static Material _sharedSphereMaterial;
 
     /// How many oxygen particles currently exist in the scene. Used by VentOxygenSpawner to cap concurrent particles.
     public static int ActiveCount { get; private set; }
@@ -130,27 +131,22 @@ public class OxygenParticleMotion : MonoBehaviour
     {
         if (_trail != null)
         {
-            _trail.time = trailTime;
-            _trail.startWidth = trailStartWidth;
-            _trail.endWidth = trailEndWidth;
-            _trail.startColor = particleColor;
-            _trail.endColor = new Color(particleColor.r, particleColor.g, particleColor.b, 0f);
-            if (_trail.material == null)
-            {
-                if (_sharedMaterial == null)
-                {
-                    _sharedMaterial = BuildUnlitMaterial(particleColor);
-                }
-                _trail.material = _sharedMaterial;
-            }
+            // Trail disabled - only the sphere is shown.
+            _trail.enabled = false;
         }
         if (_renderer != null)
         {
-            if (_sharedMaterial == null)
+            // The sphere gets its OWN lit material (not the flat unlit one the
+            // trail uses) so your scene's Directional Light actually shades
+            // it - bright toward the light, darker away from it, plus a soft
+            // specular highlight. That light/shadow gradient is what makes a
+            // sphere read as a round 3D object instead of a flat, uniformly
+            // colored disc.
+            if (_sharedSphereMaterial == null)
             {
-                _sharedMaterial = BuildUnlitMaterial(particleColor);
+                _sharedSphereMaterial = BuildLitMaterial(particleColor);
             }
-            _renderer.material = _sharedMaterial;
+            _renderer.material = _sharedSphereMaterial;
         }
     }
 
@@ -162,6 +158,21 @@ public class OxygenParticleMotion : MonoBehaviour
         Material mat = new Material(shader);
         if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", c);
         if (mat.HasProperty("_Color")) mat.SetColor("_Color", c);
+        return mat;
+    }
+
+    private static Material BuildLitMaterial(Color c)
+    {
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (shader == null) shader = Shader.Find("Standard");
+        if (shader == null) shader = Shader.Find("Diffuse"); // legacy render pipeline fallback
+        Material mat = new Material(shader);
+        if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", c);
+        if (mat.HasProperty("_Color")) mat.SetColor("_Color", c);
+        // A bit of smoothness so it picks up a visible specular highlight too -
+        // another strong "this is round" cue, on top of the diffuse shading.
+        if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 0.4f);
+        if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", 0.4f);
         return mat;
     }
 

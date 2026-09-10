@@ -249,11 +249,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: 633aabbcc01cca24e842bb9c10938380, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 648
+      value: 653
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: 633aabbcc01cca24e842bb9c10938380, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -798
+      value: -728
       objectReference: {fileID: 0}
     - target: {fileID: 3447742079981357586, guid: 633aabbcc01cca24e842bb9c10938380, type: 3}
       propertyPath: m_LocalRotation.w
@@ -517,19 +517,30 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 076a67f543394c3458eea706b6569618, type: 3}
   - {fileID: 4900000, guid: d7e300b21778575499715d523460aaba, type: 3}
   - {fileID: 4900000, guid: 34e76c7791e2da8439fe9ecb4b313fde, type: 3}
-  cyclePathFilesInOrder: 1
+  - {fileID: 4900000, guid: 5a7ede4c6ead93f449660d786b4d8582, type: 3}
+  - {fileID: 4900000, guid: 6ae8e8ac747b19242b7b40f989e5d65c, type: 3}
+  - {fileID: 4900000, guid: 191095d7cd3b13142a927620ad05bbe6, type: 3}
+  - {fileID: 4900000, guid: 322433407d5a216498587a2855bc78f1, type: 3}
+  - {fileID: 4900000, guid: 9f483bfed2a853647aad1cf5d1389e36, type: 3}
+  - {fileID: 4900000, guid: 5cf3cb9fc251af84d849435535a6f039, type: 3}
+  - {fileID: 4900000, guid: d0508d97f100d6f48a19763f3eda51e1, type: 3}
+  - {fileID: 4900000, guid: 22ea2e6389aeaec479f6cfc9389f3591, type: 3}
+  - {fileID: 4900000, guid: 3990bd435b4303041b60d0b0104c082c, type: 3}
+  - {fileID: 4900000, guid: e9be7afb21062e948af959bfcd7f3798, type: 3}
+  - {fileID: 4900000, guid: b0705a7f406196a48a7eb1833566e057, type: 3}
+  - {fileID: 4900000, guid: d68bb03ade7934948b0a8c8bf054bcdf, type: 3}
+  - {fileID: 4900000, guid: da5752a5a8714f04facdf3626eda53a6, type: 3}
+  cyclePathFilesInOrder: 0
   entrance: {fileID: 1736824164}
   waypoints:
-  - {fileID: 1736824164}
   - {fileID: 1669914969}
-  - {fileID: 1006942758}
   exit: {fileID: 1006942758}
   travelTime: 6
   pathBend: 0.6
-  spawnInterval: 2
-  identicalPathForAllParticles: 1
-  particlePrefab: {fileID: 1525491388}
-  particleScale: 6
+  spawnInterval: 0.5
+  identicalPathForAllParticles: 0
+  particlePrefab: {fileID: 0}
+  particleScale: 18
   particleColor: {r: 0, g: 0, b: 1, a: 1}
   diffusionStrength: 0.05
   diffusionFrequency: 1.5
@@ -1059,23 +1070,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8085285650658304673, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
       propertyPath: particleScale
-      value: 6
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 8085285650658304673, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
       propertyPath: spawnInterval
-      value: 2
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8085285650658304673, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
       propertyPath: waypoints.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8085285650658304673, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
-      propertyPath: identicalPathForAllParticles
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8085285650658304673, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
+      propertyPath: cyclePathFilesInOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8085285650658304673, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
+      propertyPath: identicalPathForAllParticles
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8085285650658304673, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
       propertyPath: pathCoordinatesFiles.Array.size
-      value: 3
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 8618991556620427819, guid: cf625e615cfb0a34baa37f3e00b55de7, type: 3}
       propertyPath: m_Name
