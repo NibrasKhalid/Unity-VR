@@ -15,27 +15,40 @@ using UnityEngine;
 /// </summary>
 public class VentOxygenSpawner : MonoBehaviour
 {
-    [Header("Path")]
-    [Tooltip("Optional: one or more CSV files, each with x,y,z columns (e.g. exported from a Room-Coordinates spreadsheet), each defining one full path in order. If any are assigned, this overrides Entrance/Waypoints/Exit below entirely - every new particle picks one of these paths to follow. Header rows are auto-skipped.")]
+    [Header("Route System Settings")]
+    [Tooltip("Enable CSV/Excel file-based routes")]
+    public bool useCsvFiles = true;
+
+    [Tooltip("Enable Transform (Entrance/Waypoints/Exit) based routes")]
+    public bool useTransformRoute = true;
+
+    [Tooltip("When both systems are enabled, this controls the probability of using CSV files. 0.5 = 50/50 mix. 0 = always Transform, 1 = always CSV.")]
+    [Range(0f, 1f)]
+    public float csvFileChance = 0.5f;
+
+    [Header("CSV / Excel Files")]
+    [Tooltip("Optional: one or more CSV files, each with x,y,z columns (e.g. exported from a Room-Coordinates spreadsheet), each defining one full path in order. Header rows are auto-skipped.")]
     public TextAsset[] pathCoordinatesFiles;
 
     [Tooltip("If true, cycles through Path Coordinates Files in order (1st particle uses file 0, 2nd uses file 1, etc). If false, each particle picks a random file from the list.")]
     public bool cyclePathFilesInOrder = true;
 
-    [Tooltip("Where particles spawn from (e.g. the room's entrance/vent). Ignored if any Path Coordinates Files are assigned.")]
+    [Header("Transform Route (Entrance / Waypoints / Exit)")]
+    [Tooltip("Where particles spawn from (e.g. the room's entrance/vent).")]
     public Transform entrance;
 
-    [Tooltip("Optional: points the path passes through, in order, between entrance and exit - drag in existing scene objects (e.g. your A/B/C markers) to route around obstacles or add turns. Leave empty for a simple one-bend curve. Ignored if any Path Coordinates Files are assigned.")]
+    [Tooltip("Optional: points the path passes through, in order, between entrance and exit - drag in existing scene objects (e.g. your A/B/C markers) to route around obstacles or add turns. Leave empty for a simple one-bend curve.")]
     public Transform[] waypoints;
 
-    [Tooltip("Where particles are heading toward (e.g. the room's exit/outlet vent). Ignored if any Path Coordinates Files are assigned.")]
+    [Tooltip("Where particles are heading toward (e.g. the room's exit/outlet vent).")]
     public Transform exit;
-
-    [Tooltip("Seconds to travel the full route.")]
-    public float travelTime = 6f;
 
     [Tooltip("Only used when Waypoints is empty: how far the path bows off the straight entrance-exit line, in meters.")]
     public float pathBend = 0.6f;
+
+    [Header("Movement")]
+    [Tooltip("Seconds to travel the full route.")]
+    public float travelTime = 6f;
 
     [Header("Spawning")]
     [Tooltip("Seconds between each new particle. Keep this a decent fraction of Travel Time so particles are spaced apart and read as individually moving, rather than chaining together into what looks like one continuous line.")]
@@ -69,12 +82,12 @@ public class VentOxygenSpawner : MonoBehaviour
         = new System.Collections.Generic.Dictionary<TextAsset, Vector3[]>();
     private int _nextFileIndex;
 
-    private bool HasFileRoutes => pathCoordinatesFiles != null && pathCoordinatesFiles.Length > 0;
+    private bool HasFileRoutes => useCsvFiles && pathCoordinatesFiles != null && pathCoordinatesFiles.Length > 0;
+    private bool HasTransformRoute => useTransformRoute && entrance != null && exit != null;
 
     private void Update()
     {
-        bool hasTransformRoute = entrance != null && exit != null;
-        if (!HasFileRoutes && !hasTransformRoute) return;
+        if (!HasFileRoutes && !HasTransformRoute) return;
 
         _timer += Time.deltaTime;
         if (_timer >= spawnInterval)
@@ -113,19 +126,54 @@ public class VentOxygenSpawner : MonoBehaviour
 
     private Vector3[] BuildRoute()
     {
-        if (HasFileRoutes)
-        {
-            TextAsset chosen = PickPathFile();
-            if (chosen == null) return null;
+        // Check which systems are available
+        bool canUseCsv = HasFileRoutes;
+        bool canUseTransform = HasTransformRoute;
 
-            if (!_fileRouteCache.TryGetValue(chosen, out Vector3[] route))
-            {
-                route = ParseCsvRoute(chosen);
-                _fileRouteCache[chosen] = route;
-            }
-            return route;
+        // If neither system is enabled/available, return null
+        if (!canUseCsv && !canUseTransform)
+        {
+            Debug.LogWarning("VentOxygenSpawner: Neither CSV files nor Transform routes are available. Enable at least one system and configure it.");
+            return null;
         }
 
+        // If both systems are available, randomly pick one based on csvFileChance
+        if (canUseCsv && canUseTransform)
+        {
+            if (Random.value <= csvFileChance)
+            {
+                return BuildCsvRoute();
+            }
+            else
+            {
+                return BuildTransformRoute();
+            }
+        }
+
+        // If only one system is available, use it
+        if (canUseCsv)
+        {
+            return BuildCsvRoute();
+        }
+
+        return BuildTransformRoute();
+    }
+
+    private Vector3[] BuildCsvRoute()
+    {
+        TextAsset chosen = PickPathFile();
+        if (chosen == null) return null;
+
+        if (!_fileRouteCache.TryGetValue(chosen, out Vector3[] route))
+        {
+            route = ParseCsvRoute(chosen);
+            _fileRouteCache[chosen] = route;
+        }
+        return route;
+    }
+
+    private Vector3[] BuildTransformRoute()
+    {
         if (entrance == null || exit == null) return null;
 
         int validWaypoints = 0;
@@ -238,6 +286,7 @@ public class VentOxygenSpawner : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
+        // Draw CSV routes
         if (HasFileRoutes)
         {
             Color[] palette = { Color.blue, Color.cyan, Color.green, Color.yellow, Color.red, Color.magenta };
@@ -252,9 +301,11 @@ public class VentOxygenSpawner : MonoBehaviour
                 DrawRouteGizmo(route, palette[f % palette.Length]);
             }
         }
-        else
+
+        // Draw Transform route
+        if (HasTransformRoute)
         {
-            DrawRouteGizmo(BuildRoute(), Color.blue);
+            DrawRouteGizmo(BuildTransformRoute(), Color.blue);
         }
     }
 
